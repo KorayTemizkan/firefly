@@ -1,10 +1,12 @@
-# Messaging App
+<img width="512" height="512" alt="FireFly_by_KorayTemizkan" src="https://github.com/user-attachments/assets/53d14c45-4feb-4bc8-b845-2b00d88edb08" />
+
+# FireFly
 
 Bu proje, modern ve ölçeklenebilir bir **Firebase tabanlı anlık mesajlaşma uygulamasıdır**. Flutter mimarisinde Clean Architecture prensipleri gözetilerek geliştirilmiş olup; gerçek zamanlı veritabanı yönetimi, kimlik doğrulama, yapay zeka entegrasyonu ve dinamik yapılandırma özellikleri sunar.
 
 ---
 
-## 🚀 Temel Özellikler
+## 📋 Temel Özellikler
 
 * **Gerçek Zamanlı Sohbet:** Firestore entegrasyonu ile anlık mesajlaşma, dosya ve görsel paylaşımı.
 * **Bağlantı Yönetimi:** Kullanıcı arama, bağlantı istekleri gönderme, onaylama ve reddetme süreçleri.
