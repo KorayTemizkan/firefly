@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:example_messaging/core/constants/firebase_constants.dart';
+import 'package:example_messaging/core/constants/system_constants.dart';
 
 // ! Kimlik doğrulama servis mantığı
 // Kullanıcı kayıt işlemlerinden sonra verileri Firestore'a senkronize eder
@@ -11,19 +13,19 @@ mixin FirebaseAuthService {
       try {
         // ! Her ne kadar auth bölümüne kaydedilse de biz yine de Firestore'a kaydetmeliyiz.
         // ! 'users' koleksiyonuna UID'ler başlık (document ID) olacak şekilde bilgileri kaydet.
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'uid': user.uid,
-          'email': user.email,
-          'username': user.email != null
-              ? user.email!.split('@')[0]
-              : 'user_${user.uid.substring(0, 5)}',
-          'createdAt': FieldValue.serverTimestamp(),
+        await FirebaseFirestore.instance.collection(SystemConstants.user).doc(user.uid).set({
+        FirebaseConstants.uidField: user.uid,
+          FirebaseConstants.emailField: user.email,
+          FirebaseConstants.usernameField: user.email != null
+              ? user.email!.split(SystemConstants.atSign)[0]
+              : '${FirebaseConstants.defaultUsernamePrefix}${user.uid.substring(0, 5)}',
+          FirebaseConstants.createdAtField: FieldValue.serverTimestamp(),
         });
         print(
-          "Kullanıcı başarıyla Firestore 'users' koleksiyonuna kaydedildi!",
+          FirebaseConstants.successMessage,
         );
       } catch (e) {
-        print("Firestore'a kaydederken hata oluştu: $e");
+        print("${FirebaseConstants.errorMessagePrefix} $e");
       }
     }
   }

@@ -1,3 +1,4 @@
+import 'package:example_messaging/core/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:flutter_link_previewer/flutter_link_previewer.dart';
@@ -16,7 +17,11 @@ Builders getMessageBuilders({required ChatController chatController}) {
           index, {
           required bool isSentByMe,
           MessageGroupStatus? groupStatus,
-        }) => FlyerChatTextMessage(message: message, index: index),
+        }) => FlyerChatTextMessage(
+          message: message,
+          index: index,
+          sentBackgroundColor: context.colorScheme.primary,
+        ),
 
     // ! Bağlantı mesajı oluşturucu
     linkPreviewBuilder: (context, message, isSentByMe) {

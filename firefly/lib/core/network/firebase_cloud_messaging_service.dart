@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:example_messaging/core/constants/firebase_constants.dart';
 
 /*
 Bu fonksiyon ile arka planda da çalışma sağlanır.
@@ -11,7 +11,7 @@ Bu fonksiyon ile arka planda da çalışma sağlanır.
 Future<void> _firebaseCloudMessagingBackgroundHandler(
   RemoteMessage message,
 ) async {
-  print('Arka planda mesaj geldi: ${message.messageId}');
+  print('${FirebaseConstants.backgroundMessageLog}${message.messageId}');
 }
 
 // ! Bildirim servis katmanı
@@ -40,15 +40,15 @@ class FirebaseCloudMessagingService {
 
       // İzin durumunu kontrol et
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        print('Kullanıcı bildirim izni verdi.');
+        print(FirebaseConstants.notificationPermissionGranted);
 
         // 2. Mevcut cihazın tokenini al (Sadece izin verildiyse almak en doğrusudur)
         String? token = await _messaging.getToken();
-        print('TOKEN DEBUG: $token');
+        print('${FirebaseConstants.fcmTokenLog}$token');
 
         // TODO: Projenin ilerleyen safhalarında bu token'ı sl<FirebaseFirestore>() kullanarak kullanıcının dokümanına kaydedebilirsin.
       } else {
-        print('Kullanıcı bildirim iznini reddetti veya sınırladı.');
+        print(FirebaseConstants.notificationPermissionDenied);
       }
 
       // 3. Arka plan dinleyicisini ayarla
@@ -60,7 +60,7 @@ class FirebaseCloudMessagingService {
       // 4. Ön plan dinleyicisini ayarla (Uygulama açıkken)
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         print(
-          'Uygulama açıkken bildirim geldi: ${message.notification?.title}',
+          '${FirebaseConstants.foregroundMessageLog}${message.notification?.title}',
         );
 
         if (message.notification != null) {
@@ -72,7 +72,7 @@ class FirebaseCloudMessagingService {
 
       // 5. Bildirime tıklandığında uygulama arka plandaysa
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        print('Arka plandaki bildirime tıklandı. Veri: ${message.data}');
+        print('${FirebaseConstants.backgroundClickedLog}${message.data}');
 
         // TODO: auto_route kullanıyorsan yönlendirmeyi şöyle yapabilirsin:
         // if (message.data['type'] == 'match') {
@@ -84,13 +84,13 @@ class FirebaseCloudMessagingService {
       RemoteMessage? initialMessage = await _messaging.getInitialMessage();
       if (initialMessage != null) {
         print(
-          'Uygulama tamamen kapalıyken bildirime tıklanarak açıldı. Veri: ${initialMessage.data}',
+          '${FirebaseConstants.terminatedClickedLog}${initialMessage.data}',
         );
         // Uygulama tamamen sıfırdan açıldığı için yönlendirmeyi Splash/Home açıldıktan hemen sonraya saklamalısın.
       }
     } catch (e) {
       // Olası bir Firebase bağlantı koptu/yetki yok hatasında uygulamanın main.dart'ı kilitlemesini önleriz
-      print("Firebase Messaging başlatılırken hata oluştu: $e");
+      print("${FirebaseConstants.fcmInitError}$e");
     }
   }
 }

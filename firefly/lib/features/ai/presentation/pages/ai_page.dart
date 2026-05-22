@@ -1,6 +1,7 @@
 // https://firebase.google.com/docs/ai-logic/get-started?platform=flutter&api=dev#prereqs
 
 import 'package:auto_route/auto_route.dart';
+import 'package:example_messaging/core/constants/firebase_constants.dart';
 import 'package:example_messaging/core/utils/get_message_builders.dart';
 import 'package:example_messaging/core/widgets/custom_appbar.dart';
 import 'package:example_messaging/features/ai/presentation/pages/ai_page_mixin.dart';
@@ -38,7 +39,7 @@ class _ChatPageState extends State<AiPage> with AiPageMixin {
           if (id == currentUserId) {
             return User(id: id, name: currentUserName);
           } else {
-            return const User(id: 'gemini_bot', name: 'Gemini Asistan');
+            return const User(id: FirebaseConstants.geminiBotId, name: FirebaseConstants.geminiAssistant);
           }
         },
 

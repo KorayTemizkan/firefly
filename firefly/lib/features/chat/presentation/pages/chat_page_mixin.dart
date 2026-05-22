@@ -1,3 +1,4 @@
+import 'package:example_messaging/core/constants/system_constants.dart';
 import 'package:example_messaging/core/network/firebase_chat_service.dart';
 import 'package:example_messaging/features/chat/presentation/pages/chat_page.dart';
 import 'package:example_messaging/injection_container.dart';
@@ -13,9 +14,9 @@ mixin ChatPageMixin on State<ChatPage> {
   final FirebaseAuth _auth = sl<FirebaseAuth>();
 
   // Aktif kullanıcının ID ve İsim bilgilerini alıyoruz
-  String get currentUserId => _auth.currentUser?.uid ?? 'unknown_user';
+  String get currentUserId => _auth.currentUser?.uid ?? SystemConstants.unknownUser;
   String get currentUserName =>
-      _auth.currentUser?.displayName ?? _auth.currentUser?.email ?? 'Ben';
+      _auth.currentUser?.displayName ?? _auth.currentUser?.email ?? SystemConstants.me;
 
   // ! Ek dosya/görsel paylaşım menüsünü açar
   void handleAttachmentPressed() {
@@ -40,7 +41,7 @@ mixin ChatPageMixin on State<ChatPage> {
                       widget.chatId,
                     );
                   },
-                  child: const Text('Görsel Seçici'),
+                  child: const Text(SystemConstants.imagePicker),
                 ),
 
                 // ! DOSYA
@@ -53,7 +54,7 @@ mixin ChatPageMixin on State<ChatPage> {
                       widget.chatId,
                     );
                   },
-                  child: const Text('Dosya Seçici'),
+                  child: const Text(SystemConstants.filePicker),
                 ),
 
                 // ! SES
@@ -62,7 +63,7 @@ mixin ChatPageMixin on State<ChatPage> {
                     Navigator.pop(context);
                     // handleVoiceSender(); // İleride buraya da widget.chatId vermen gerekecek
                   },
-                  child: const Text('Ses Kaydı Gönder'),
+                  child: const Text(SystemConstants.voicePicker),
                 ),
               ],
             ),

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:example_messaging/config/routes/app_router.dart';
 import 'package:example_messaging/config/theme/app_themes.dart';
+import 'package:example_messaging/core/constants/system_constants.dart';
 import 'package:example_messaging/features/notification/presentation/cubit/notification_cubit.dart';
 import 'package:example_messaging/features/notification/presentation/cubit/notification_state.dart';
 import 'package:example_messaging/features/notification/presentation/widgets/toast_message.dart';
@@ -84,8 +85,8 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('tr', ''), // Türkçeyi desteklediğimizi belirtiyoruz
-            Locale('en', ''),
+            Locale(SystemConstants.turkishLocale, SystemConstants.emptyString), // Türkçeyi desteklediğimizi belirtiyoruz
+            Locale(SystemConstants.englishLocale, SystemConstants.emptyString),
           ],
           // !
         ),

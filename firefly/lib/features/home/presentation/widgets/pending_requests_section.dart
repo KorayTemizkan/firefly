@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:example_messaging/core/network/firebase_network_service.dart';
+import 'package:example_messaging/core/constants/firebase_constants.dart';
+import 'package:example_messaging/core/constants/home_constants.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:example_messaging/injection_container.dart';
@@ -12,36 +14,37 @@ class PendingRequestsSection extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    // ! Firestore sorgumuzu oluşturuyoruz. Bağlantılar koleksiyonundan bize gelen istekleri tarihe göre sıralıyoruz.
+    // ! Firestore sorgumuzu oluşturuyoruz.
     final requestsQuery = FirebaseFirestore.instance
-        .collection('connection_requests')
-        .where('toId', isEqualTo: currentUid)
-        .where('status', isEqualTo: 'pending')
-        .orderBy('createdAt', descending: true);
+        .collection(FirebaseConstants.connectionRequestsCollection)
+        .where(FirebaseConstants.toIdField, isEqualTo: currentUid)
+        .where(
+          FirebaseConstants.statusField,
+          isEqualTo: FirebaseConstants.statusPending,
+        )
+        .orderBy(FirebaseConstants.createdAtField, descending: true);
 
     return Expanded(
-      // ! Firestore UI paketini kullanıyoruz. ListView.builder'ın yamalanmış hali
       child: FirestoreListView<Map<String, dynamic>>(
         scrollDirection: Axis.vertical,
         query: requestsQuery,
-        pageSize: 20, // Her kaydırmada 20'şer veri çek.
+        pageSize: 20,
         errorBuilder: (context, error, stackTrace) =>
-            Text('Hata oluştu: $error'),
+            Text('${FirebaseConstants.errorMessagePrefix}$error'),
         loadingBuilder: (context) =>
             const Center(child: CircularProgressIndicator()),
         emptyBuilder: (context) =>
-            const Center(child: Text('Hiç kullanıcı bulunamadı.')),
+            const Center(child: Text(HomeConstants.noUserFound)),
         itemBuilder: (context, doc) {
-          // ! doc.data() ile doğrudan Firestore dökümanına erişiyoruz ve gönderen kullanıcının bilgilerini çekiyoruz
           final requestData = doc.data();
           final requestId = doc.id;
 
-          final senderId = requestData['fromId'];
+          final senderId = requestData[FirebaseConstants.fromIdField];
           final senderUsername =
-              requestData['senderUsername'] ?? 'Bilinmeyen Kullanıcı';
-          final status = requestData['status'] ?? '';
+              requestData[FirebaseConstants.senderUsernameField] ??
+              HomeConstants.unknownUser;
+          final status = requestData[FirebaseConstants.statusField] ?? '';
 
-          // ! Liste elemanı tasarımı
           return ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const CircleAvatar(child: Icon(Icons.person)),
@@ -74,13 +77,3 @@ class PendingRequestsSection extends StatelessWidget
     );
   }
 }
-
-/*
-FirestoreListView senin yerine:
-
-    Koleksiyonu kesintisiz (Stream/Live) olarak dinler.
-
-    Sadece değişen dökümanları tespit edip arayüze yansıtır.
-
-    Üstelik bunu yaparken sayfalama (pagination) mantığını da bozmaz (sen aşağı kaydırdıkça sonraki 20'yi çekmeye devam eder ama canlılığı korur).
-*/

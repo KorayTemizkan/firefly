@@ -1,5 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:example_messaging/config/routes/app_router.gr.dart';
+import 'package:example_messaging/core/constants/system_constants.dart';
 import 'package:example_messaging/core/utils/extensions.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +12,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('FireFly'),
+      title: const Text(SystemConstants.appName),
 
       actions: [
         // ! Ayarlar sayfasına yönlendirme ikonu

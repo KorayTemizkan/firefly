@@ -1,3 +1,4 @@
+import 'package:example_messaging/core/constants/system_constants.dart';
 import 'package:example_messaging/features/remote_config/presentation/cubit/remote_config_cubit.dart';
 import 'package:example_messaging/features/remote_config/presentation/cubit/remote_config_state.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,7 @@ class RemoteConfigBlocBuilder extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
-                'Remote Config Mesajı: ${state.welcomeMessage}',
+                '${SystemConstants.remoteConfigMessage} ${state.welcomeMessage}',
                 style: const TextStyle(fontSize: 24, letterSpacing: 1.5),
                 textAlign: TextAlign.center,
               ),

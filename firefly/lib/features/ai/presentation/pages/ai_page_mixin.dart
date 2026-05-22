@@ -1,5 +1,6 @@
 // TODO: İşlev Dışı (düzenlenecek)
 
+import 'package:example_messaging/core/constants/system_constants.dart';
 import 'package:example_messaging/core/network/firebase_ai_service.dart';
 import 'package:example_messaging/features/ai/presentation/pages/ai_page.dart';
 import 'package:example_messaging/injection_container.dart';
@@ -15,9 +16,9 @@ mixin AiPageMixin on State<AiPage> {
   final FirebaseAuth _auth = sl<FirebaseAuth>();
 
   // Aktif kullanıcının ID ve İsim bilgilerini alıyoruz
-  String get currentUserId => _auth.currentUser?.uid ?? 'unknown_user';
+  String get currentUserId => _auth.currentUser?.uid ?? SystemConstants.unknownUser;
   String get currentUserName =>
-      _auth.currentUser?.displayName ?? _auth.currentUser?.email ?? 'Ben';
+      _auth.currentUser?.displayName ?? _auth.currentUser?.email ?? SystemConstants.me;
 
   // Fonksiyonu build metodundan tamamen kopardık
   // ! Ek dosya/görsel paylaşım menüsünü açar

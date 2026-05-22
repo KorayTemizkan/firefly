@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:example_messaging/core/network/firebase_network_service.dart';
+import 'package:example_messaging/core/constants/firebase_constants.dart';
 import 'package:example_messaging/injection_container.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
 import 'package:flutter/material.dart';
@@ -13,30 +14,33 @@ class SentRequestsSection extends StatelessWidget with FirebaseNetworkService {
   Widget build(BuildContext context) {
     // ! Firestore sorgumuzu oluşturuyoruz. Bağlantılar koleksiyonundan bizim gönderdiğimiz istekleri tarihe göre sıralıyoruz.
     final requestsQuery = FirebaseFirestore.instance
-        .collection('connection_requests')
-        .where('fromId', isEqualTo: currentUid)
-        .where('status', isEqualTo: 'pending')
-        .orderBy('createdAt', descending: true);
+        .collection(FirebaseConstants.connectionRequestsCollection)
+        .where(FirebaseConstants.fromIdField, isEqualTo: currentUid)
+        .where(
+          FirebaseConstants.statusField,
+          isEqualTo: FirebaseConstants.statusPending,
+        )
+        .orderBy(FirebaseConstants.createdAtField, descending: true);
 
     return Expanded(
-      // ! Firestore UI paketini kullanıyoruz. ListView.builder'ın yamalanmış hali
+      // ! Firestore UI paketini kullanıyoruz.
       child: FirestoreListView<Map<String, dynamic>>(
         scrollDirection: Axis.vertical,
         query: requestsQuery,
-        pageSize: 20, // Her kaydırmada 20'şer veri çek.
+        pageSize: 20,
         errorBuilder: (context, error, stackTrace) =>
-            Text('Hata oluştu: $error'),
+            Text('${FirebaseConstants.errorMessagePrefix}$error'),
         loadingBuilder: (context) =>
             const Center(child: CircularProgressIndicator()),
         emptyBuilder: (context) =>
             const Center(child: Text('Henüz gönderilmiş bir istek yok.')),
         itemBuilder: (context, doc) {
-          // ! doc.data() ile doğrudan Firestore dökümanına erişiyoruz ve gönderilen kullanıcının bilgilerini çekiyoruz
           final requestData = doc.data();
           final requestId = doc.id;
 
-          final receiverUsername = requestData['receiverUsername'] ?? '';
-          final status = requestData['status'] ?? '';
+          final receiverUsername =
+              requestData[FirebaseConstants.receiverUsernameField] ?? '';
+          final status = requestData[FirebaseConstants.statusField] ?? '';
 
           // ! Liste elemanı tasarımı
           return ListTile(
@@ -61,13 +65,3 @@ class SentRequestsSection extends StatelessWidget with FirebaseNetworkService {
     );
   }
 }
-
-/*
-FirestoreListView senin yerine:
-
-    Koleksiyonu kesintisiz (Stream/Live) olarak dinler.
-
-    Sadece değişen dökümanları tespit edip arayüze yansıtır.
-
-    Üstelik bunu yaparken sayfalama (pagination) mantığını da bozmaz (sen aşağı kaydırdıkça sonraki 20'yi çekmeye devam eder ama canlılığı korur).
-*/

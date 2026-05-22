@@ -8,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
+import 'package:example_messaging/core/constants/firebase_constants.dart';
 
 // ! Sohbet veritabanı ve iletişim servis katmanı
 // Firestore ile gerçek zamanlı sohbet akışını, medya yüklemelerini ve batch işlemlerini yönetir
@@ -29,10 +30,12 @@ class FirebaseChatService {
 
     // Burada arka planda çalışan bir çevrimdışı özellik var. Uygulamadan çıkıp girince de gözüküyor
     _messageSubscription = FirebaseFirestore.instance
-        .collection('chats')
+        .collection(FirebaseConstants.chatsCollection)
         .doc(chatId)
-        .collection('messages') // ! Odalar altındaki mesajlar alt koleksiyonu
-        .orderBy('createdAt', descending: false)
+        .collection(
+          FirebaseConstants.messagesCollection,
+        ) // ! Odalar altındaki mesajlar alt koleksiyonu
+        .orderBy(FirebaseConstants.createdAtField, descending: false)
         .limit(50)
         .snapshots()
         .listen((snapshot) {
@@ -59,17 +62,19 @@ class FirebaseChatService {
 
     // Yeni bir mesaj yazma
     final msgRef = firestore
-        .collection('chats')
+        .collection(FirebaseConstants.chatsCollection)
         .doc(chatId)
-        .collection('messages')
+        .collection(FirebaseConstants.messagesCollection)
         .doc(messageId);
     batch.set(msgRef, messageMap); // Düzenlenmiş Map doğrudan yazılıyor
 
     // Son mesajı düzenleme
-    final chatRef = firestore.collection('chats').doc(chatId);
+    final chatRef = firestore
+        .collection(FirebaseConstants.chatsCollection)
+        .doc(chatId);
     batch.update(chatRef, {
-      'lastMessage': lastTextDisplay,
-      'lastMessageTime': FieldValue.serverTimestamp(),
+      FirebaseConstants.lastMessageField: lastTextDisplay,
+      FirebaseConstants.lastMessageTimeField: FieldValue.serverTimestamp(),
     });
 
     // ! İki işlemi tek seferde (Atomik olarak) yapma
@@ -88,7 +93,8 @@ class FirebaseChatService {
     );
 
     final messageMap = newMessage.toJson();
-    messageMap['type'] = 'text'; // ! Bu bir düz metindir etiketini vurduk
+    messageMap[FirebaseConstants.typeField] =
+        FirebaseConstants.textType; // ! Bu bir düz metindir etiketini vurduk
 
     _saveMessageAndSetLast(
       chatId: chatId,
@@ -121,7 +127,7 @@ class FirebaseChatService {
       final messageId = const Uuid().v4();
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child('chat_images')
+          .child(FirebaseConstants.chatImagesPath)
           .child('$messageId.jpg');
 
       // decodedImage ile görselin boyutlarına erişeceğiz, downloadUrl ile de imageSource vereceğiz
@@ -142,16 +148,17 @@ class FirebaseChatService {
       );
 
       final messageMap = message.toJson();
-      messageMap['type'] = 'image'; // ! Bu bir görseldir etiketini vurduk
+      messageMap[FirebaseConstants.typeField] =
+          FirebaseConstants.imageType; // ! Bu bir görseldir etiketini vurduk
 
       await _saveMessageAndSetLast(
         chatId: chatId,
         messageMap: messageMap,
         messageId: messageId,
-        lastTextDisplay: '📷 Fotoğraf',
+        lastTextDisplay: FirebaseConstants.photoDisplay,
       );
     } catch (e) {
-      print("Görsel gönderilirken hata oluştu: $e");
+      print("${FirebaseConstants.errorMessagePrefix}: $e");
     }
   }
 
@@ -175,7 +182,7 @@ class FirebaseChatService {
       final messageId = const Uuid().v4();
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child('chat_files')
+          .child(FirebaseConstants.chatFilesPath)
           .child('${messageId}_${pickedFile.name}');
 
       final file = File(pickedFile.path!);
@@ -192,16 +199,18 @@ class FirebaseChatService {
       );
 
       final messageMap = message.toJson();
-      messageMap['type'] = 'file'; // ! Bu bir belgedir etiketini vurduk
+      messageMap[FirebaseConstants.typeField] =
+          FirebaseConstants.fileType; // ! Bu bir belgedir etiketini vurduk
 
       await _saveMessageAndSetLast(
         chatId: chatId,
         messageMap: messageMap,
         messageId: messageId,
-        lastTextDisplay: '📁 ${pickedFile.name}',
+        lastTextDisplay:
+            '${FirebaseConstants.fileDisplayPrefix}${pickedFile.name}',
       );
     } catch (e) {
-      print("Dosya gönderilirken hata oluştu: $e");
+      print("${FirebaseConstants.errorMessagePrefix}: $e");
     }
   }
 

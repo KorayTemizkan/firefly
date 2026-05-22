@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:example_messaging/core/constants/system_constants.dart';
 import 'package:example_messaging/core/network/firebase_ai_service.dart';
 import 'package:example_messaging/core/network/firebase_chat_service.dart';
 import 'package:example_messaging/core/network/firebase_cloud_messaging_service.dart';
@@ -82,8 +83,9 @@ String get currentUid => currentUser?.uid ?? '';
 /// Giriş yapmış kullanıcının e-posta adresi (Yoksa boş döner)
 String get currentEmail => currentUser?.email ?? '';
 
+// TODO: Her seferinde böyle yapmamalıyım
 /// Kullanıcı adı türetici:
 /// E-postanın '@' öncesini alır veya UID'den benzersiz bir isim oluşturur.
 String get currentUsername => currentEmail.isNotEmpty
-    ? currentEmail.split('@')[0]
-    : 'user_${currentUid.isNotEmpty ? currentUid.substring(0, 5) : 'unknown'}';
+    ? currentEmail.split(SystemConstants.atSign)[0]
+    : '${SystemConstants.user}_${currentUid.isNotEmpty ? currentUid.substring(0, 5) : SystemConstants.unknownUser}';

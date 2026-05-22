@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:example_messaging/core/constants/firebase_constants.dart';
+import 'package:example_messaging/core/constants/home_constants.dart';
 import 'package:example_messaging/core/network/firebase_network_service.dart';
 import 'package:example_messaging/injection_container.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_ui_firestore/firebase_ui_firestore.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 // ! Kullanıcı Listesi Bölümü
 // Firestore'daki kullanıcıları arama özelliği ile birlikte listeleyen ve bağlantı isteği gönderilmesini sağlayan bölüm
@@ -20,17 +22,22 @@ class _UserListSectionState extends State<UserListSection>
   // ! Dinamik sorgu oluşturma aracımız
   Query<Map<String, dynamic>> _buildQuery() {
     final baseQuery = FirebaseFirestore.instance
-        .collection('users')
-        .orderBy('username');
+        .collection(FirebaseConstants.usersCollection)
+        .orderBy(FirebaseConstants.usernameField);
 
     if (_searchText.isEmpty) {
       return baseQuery;
     }
-    // * Firestore'da başlangıç harflerine göre arama (Prefix Search) yapma taktiği:
-    // * Örn: "ahm" ile başlayan ve "ahm\uf8ff" arasındakileri getir dersek "ahmet"i bulur.
+    // * Firestore'da başlangıç harflerine göre arama (Prefix Search) yapma taktiği
     return baseQuery
-        .where('username', isGreaterThanOrEqualTo: _searchText)
-        .where('username', isLessThanOrEqualTo: '$_searchText\uf8ff');
+        .where(
+          FirebaseConstants.usernameField,
+          isGreaterThanOrEqualTo: _searchText,
+        )
+        .where(
+          FirebaseConstants.usernameField,
+          isLessThanOrEqualTo: '$_searchText\uf8ff',
+        );
   }
 
   @override
@@ -40,7 +47,6 @@ class _UserListSectionState extends State<UserListSection>
         children: [
           // ! Arama Çubuğu
           _customTextField(),
-
           _customFirestoreListView(),
         ],
       ),
@@ -50,19 +56,17 @@ class _UserListSectionState extends State<UserListSection>
   // ! Kullanıcı listesi görünümü
   Expanded _customFirestoreListView() {
     return Expanded(
-      // ! Firestore UI paketini kullanıyoruz. ListView.builder'ın yamalanmış hali
       child: FirestoreListView<Map<String, dynamic>>(
         scrollDirection: Axis.vertical,
         query: _buildQuery(),
-        pageSize: 20, // Her kaydırmada 20'şer veri çek.
+        pageSize: 20,
         errorBuilder: (context, error, stackTrace) =>
-            Text('Hata oluştu: $error'),
+            Text('${FirebaseConstants.errorMessagePrefix}$error'),
         loadingBuilder: (context) =>
             const Center(child: CircularProgressIndicator()),
         emptyBuilder: (context) =>
-            const Center(child: Text('Hiç kullanıcı bulunamadı.')),
+            const Center(child: Text(HomeConstants.noUserFound)),
         itemBuilder: (context, doc) {
-          // ! doc.data() ile doğrudan Firestore dökümanına erişiyoruz ve o anki kullanıcının bilgilerini çekiyoruz
           final userData = doc.data();
           final targetUserId = doc.id;
 
@@ -71,10 +75,11 @@ class _UserListSectionState extends State<UserListSection>
             return const SizedBox.shrink();
           }
 
-          final targetUsername = userData['username'] ?? 'Bilinmeyen Kullanıcı';
-          final targetUserEmail = userData['email'] ?? '';
+          final targetUsername =
+              userData[FirebaseConstants.usernameField] ??
+              HomeConstants.unknownUser;
+          final targetUserEmail = userData[FirebaseConstants.emailField] ?? '';
 
-          // ! Liste elemanı tasarımı
           return ListTile(
             contentPadding: EdgeInsets.zero,
             leading: const CircleAvatar(child: Icon(Icons.person)),
@@ -108,19 +113,9 @@ class _UserListSectionState extends State<UserListSection>
       ),
       onChanged: (value) {
         setState(() {
-          _searchText = value; // * Her harf yazıldığında sorgu tetiklenecek
+          _searchText = value;
         });
       },
     );
   }
 }
-
-/*
-FirestoreListView senin yerine:
-
-    Koleksiyonu kesintisiz (Stream/Live) olarak dinler.
-
-    Sadece değişen dökümanları tespit edip arayüze yansıtır.
-
-    Üstelik bunu yaparken sayfalama (pagination) mantığını da bozmaz (sen aşağı kaydırdıkça sonraki 20'yi çekmeye devam eder ama canlılığı korur).
-*/

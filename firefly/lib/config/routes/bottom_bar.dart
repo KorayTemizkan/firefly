@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:example_messaging/config/routes/app_router.gr.dart';
-import 'package:example_messaging/core/constants/system_constants.dart';
+import 'package:example_messaging/core/constants/route_constants.dart';
 import 'package:flutter/material.dart';
 
 // ! Ana navigasyon barı sayfası
@@ -24,15 +24,15 @@ class CustomBottomBar extends StatelessWidget {
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.home),
-              label: SystemConstants.homeLabel,
+              label: RouteConstants.homeLabel,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.smart_toy), 
-              label: SystemConstants.aiLabel,
+              label: RouteConstants.aiLabel,
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person), 
-              label: SystemConstants.profileLabel,
+              label: RouteConstants.profileLabel,
             ),
           ],
         );

@@ -1,7 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:example_messaging/config/routes/app_router.gr.dart';
 import 'package:example_messaging/config/routes/auth_guard.dart';
-import 'package:example_messaging/core/constants/system_constants.dart';
+import 'package:example_messaging/core/constants/route_constants.dart';
 
 // ! Rotalama ayarları
 // Uygulamanın tüm navigasyon yapısını belirler ve AutoRoute generator için işaretçidir
@@ -13,7 +13,7 @@ class AppRouter extends RootStackRouter {
     // Kimlik doğrulama ekranı, başlangıç sayfasıdır ve AuthGuard ile korunur
     AutoRoute(
       page: AuthRoute.page,
-      path: SystemConstants.authPath,
+      path: RouteConstants.authPath,
       initial: true,
       guards: [AuthGuard()],
     ),
@@ -22,19 +22,19 @@ class AppRouter extends RootStackRouter {
     // Uygulamanın ana navigasyon barını ve içerdiği alt sayfaları tanımlar
     AutoRoute(
       page: CustomBottomBar.page,
-      path: SystemConstants.mainPath,
+      path: RouteConstants.mainPath,
       children: [
-        AutoRoute(page: HomeRoute.page, path: SystemConstants.homePath),
-        AutoRoute(page: AiRoute.page, path: SystemConstants.aiPath),
-        AutoRoute(page: ProfileRoute.page, path: SystemConstants.profilePath),
+        AutoRoute(page: HomeRoute.page, path: RouteConstants.homePath),
+        AutoRoute(page: AiRoute.page, path: RouteConstants.aiPath),
+        AutoRoute(page: ProfileRoute.page, path: RouteConstants.profilePath),
       ],
     ),
 
     // ! Alt sayfalar
     // BottomBar dışı veya bağımsız açılan ekran rotaları
-    AutoRoute(page: ChatRoute.page, path: SystemConstants.chatPath),
-    AutoRoute(page: FullImageRoute.page, path: SystemConstants.imageTapPath),
-    AutoRoute(page: SettingsRoute.page, path: SystemConstants.settingsPath),
+    AutoRoute(page: ChatRoute.page, path: RouteConstants.chatPath),
+    AutoRoute(page: FullImageRoute.page, path: RouteConstants.imageTapPath),
+    AutoRoute(page: SettingsRoute.page, path: RouteConstants.settingsPath),
   ];
 }
 

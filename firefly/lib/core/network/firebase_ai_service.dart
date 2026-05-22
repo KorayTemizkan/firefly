@@ -1,3 +1,5 @@
+import 'package:example_messaging/core/constants/firebase_constants.dart';
+import 'package:example_messaging/core/constants/system_constants.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_chat_core/flutter_chat_core.dart';
 import 'package:uuid/uuid.dart';
@@ -12,7 +14,7 @@ class FirebaseAiService {
 
   // ! Modeli seç
   final _model = FirebaseAI.googleAI().generativeModel(
-    model: 'gemini-2.5-flash',
+    model: FirebaseConstants.geminiModel,
   );
 
   // ! Oturumu başlat
@@ -32,8 +34,9 @@ class FirebaseAiService {
     final aiMessageId = const Uuid().v4();
     var aiMessage = TextMessage(
       id: aiMessageId,
-      authorId: 'gemini_bot',
-      text: '...', // Başlangıçta yükleniyor hissi vermek için 3 nokta koyuyoruz
+      authorId: FirebaseConstants.geminiBotId,
+      text: FirebaseConstants
+          .loadingPlaceholder, // Başlangıçta yükleniyor hissi vermek için 3 nokta koyuyoruz
       status: MessageStatus
           .sending, // ! Saat ikonunu dönen bir loading animasyonu yapar
       createdAt: DateTime.now().toUtc(),
@@ -43,7 +46,7 @@ class FirebaseAiService {
     try {
       // ! Gemini'ye mesajı gönder ve al
       final stream = _chatSession.sendMessageStream(Content.text(text));
-      String accumulatedText = '';
+      String accumulatedText = SystemConstants.emptyString;
 
       // ! Cevap parça parça (chunk) geldikçe bu döngü tetiklenir
       await for (final chunk in stream) {
@@ -72,12 +75,12 @@ class FirebaseAiService {
       }
     } catch (e) {
       // ! Hatayı tam bir metin olarak hazırla
-      final String fullErrorText = "Bir hata oluştu: $e";
+      final String fullErrorText = "${FirebaseConstants.errorMessagePrefix}: $e";
       String accumulatedErrorText = "";
 
       // ! Önce mesajın ikonunu anında "hata" durumuna (kırmızı ünlem vb.) çevir
       var errorStatusMessage = aiMessage.copyWith(
-        text: "",
+        text: SystemConstants.emptyString,
         status: MessageStatus.error,
       );
       _chatController.updateMessage(aiMessage, errorStatusMessage);

@@ -1,16 +1,7 @@
 import 'dart:async';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:example_messaging/core/constants/firebase_constants.dart';
 
-// ? Bir geliştiricinin uygulama mağazadayken güncelleme yapmadan uzaktan değişiklikler yapmasını sağlayan özelliktir.
-/*
-
-flutter pub add firebase_remote_config
-Aşağıdaki fonksiyon yazılır
-Firebase Console'de remote config etkinleştir
-Ayarlamaları yap
-Değişiklikleri yayınla butonuna bas
-
-*/
 // ! Uzaktan Yapılandırma Servis Katmanı
 // Uygulama içerisindeki değişkenleri Firebase üzerinden dinamik olarak güncellemeyi sağlar
 class FirebaseRemoteConfigService {
@@ -24,42 +15,42 @@ class FirebaseRemoteConfigService {
 
   // ! Konfigürasyon Değerleri
   // Uzaktan yönetilen parametreleri çeken getter metodları
-  String get welcomeMessage => _remoteConfig.getString('welcome_message');
-  String get imageUrl => _remoteConfig.getString('image_url');
-  bool get isHidden => _remoteConfig.getBool('is_hidden');
-  int get year => _remoteConfig.getInt('year');
+  String get welcomeMessage =>
+      _remoteConfig.getString(FirebaseConstants.welcomeMessageKey);
+  String get imageUrl => _remoteConfig.getString(FirebaseConstants.imageUrlKey);
+  bool get isHidden => _remoteConfig.getBool(FirebaseConstants.isHiddenKey);
+  int get year => _remoteConfig.getInt(FirebaseConstants.yearKey);
 
   Future<void> setupRemoteConfig() async {
     try {
       // Varsayılan değerler belirlenir
       await _remoteConfig.setDefaults(<String, dynamic>{
-        'welcome_message': 'Hoş Geldiniz!',
-        'image_url': '',
-        'is_hidden': false,
-        'year': 2026,
+        FirebaseConstants.welcomeMessageKey:
+            FirebaseConstants.defaultWelcomeMessage,
+        FirebaseConstants.imageUrlKey: FirebaseConstants.defaultImageUrl,
+        FirebaseConstants.isHiddenKey: FirebaseConstants.defaultIsHidden,
+        FirebaseConstants.yearKey: FirebaseConstants.defaultYear,
       });
 
       // Ne kadar sık sürede güncelleme yapılır
       await _remoteConfig.setConfigSettings(
         RemoteConfigSettings(
-          fetchTimeout: const Duration(
-            minutes: 1,
-          ), // 1 dakika boyunca denemeye devam et
+          fetchTimeout: const Duration(minutes: 1),
           minimumFetchInterval: Duration.zero,
-        ), // 10 dakikada bir istek at (Test için 0 yaptım)
+        ),
       );
 
-      // İLk açılışta verileri çek ve etkinleştir
+      // İlk açılışta verileri çek ve etkinleştir
       await _remoteConfig.fetchAndActivate();
 
       // Dinle ve ayar değişirse tekrar okumayı sağla.
       _remoteConfig.onConfigUpdated.listen((event) async {
-        print("REMOTE CONFIG: Sunucuda değişiklik algılandı! Güncelleniyor...");
+        print(FirebaseConstants.remoteConfigUpdatedLog);
         await _remoteConfig.activate();
         _configUpdateController.add(null);
       });
     } catch (e) {
-      print('Remote Config Başlatılamadı: $e');
+      print('${FirebaseConstants.remoteConfigErrorLog}$e');
     }
   }
 

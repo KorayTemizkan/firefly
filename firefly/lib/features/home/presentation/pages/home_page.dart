@@ -1,4 +1,5 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:example_messaging/core/constants/home_constants.dart';
 import 'package:example_messaging/core/widgets/custom_appbar.dart';
 import 'package:example_messaging/core/widgets/title_text.dart';
 import 'package:example_messaging/features/home/presentation/widgets/active_chats_section.dart';
@@ -30,9 +31,9 @@ class HomePage extends StatelessWidget {
                 dividerColor: Colors.transparent,
                 splashBorderRadius: BorderRadius.circular(16),
                 tabs: const [
-                  Tab(text: 'Mesajlarım'),
-                  Tab(text: 'Davetlerim'),
-                  Tab(text: 'Sohbetlerim'),
+                  Tab(text: HomeConstants.myMessages),
+                  Tab(text: HomeConstants.myInvitations),
+                  Tab(text: HomeConstants.myChats),
                 ],
               ),
 
@@ -48,7 +49,7 @@ class HomePage extends StatelessWidget {
               ),
 
               // ! Kullanıcı Listesi Bölümü
-              const TitleText(text: 'Tüm Kullanıcılar'),
+              const TitleText(text: HomeConstants.allUsers),
               const UserListSection(),
             ],
           ),

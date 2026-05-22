@@ -1,17 +1,16 @@
+import 'package:example_messaging/core/constants/system_constants.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 // ! Özel Önbellek Yönetimi
 // Uygulama içerisindeki görsellerin yönetimi için özelleştirilmiş CacheManager
 class CustomCacheManager {
-  static const _imageCacheKey = 'image_cache_key';
-
   // Private constructor ile dışarıdan "new" ile oluşturmayı engelledik
   CustomCacheManager._internal();
 
   // Singleton instance ile sınıfın tek bir örneğini sakladık
   static CacheManager instance = CacheManager(
     Config(
-      _imageCacheKey,
+      SystemConstants.imageCacheKey,
       stalePeriod: const Duration(
         days: 14,
       ), // Standart 30 gün yerine 14 gün olarak ayarladık
